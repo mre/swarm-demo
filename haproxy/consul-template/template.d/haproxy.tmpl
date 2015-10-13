@@ -1,0 +1,29 @@
+global
+    maxconn {{or (key "service/haproxy/maxconn") 1024}}
+    debug
+
+defaults
+    mode http
+    timeout connect {{or (key "service/haproxy/timeouts/connect") "5000ms"}}
+    timeout client {{or (key "service/haproxy/timeouts/client") "50000ms"}}
+    timeout server {{or (key "service/haproxy/timeouts/server") "50000ms"}}
+
+listen stats :1936
+    mode http
+    stats enable
+    stats hide-version
+    stats realm Haproxy\ Statistics
+    stats uri /
+    stats auth guest:guest
+
+# Generated automatically by consul-template
+{{ range services }}
+    acl host_{{ .Name }} hdr(host) -i {{ .Name }}.{{ or (env "HAPROXY_DOMAIN") "haproxy.service.consul" }}
+    use_backend {{ .Name }}_backend if host_{{ .Name }}
+{{ end }}
+
+{{ range services }}
+backend {{ .Name }}_backend
+{{ range service .Name }}
+   server {{ .Node }} {{ .Address }}:{{ .Port }}{{ end }}
+{{ end }}

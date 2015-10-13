@@ -25,25 +25,15 @@ This will create the following setup:
 
 The containers are golang webservers that take an int and return `true`
 if the int is a prime number and `false` otherwise.  
-The traffic to the containers is load-balanced with an Nginx proxy.
-Go to `primeserver.<your-ip>.xip.io` to access one of the webservers.
+The traffic to the containers is load-balanced with a HAproxy.
 
 Swarm is used for scaling the number of webservers.
-You can add new servers with `docker-compose scale primeserver=5`.  
-This will create five instances of the primeserver container.
 
 # Usage
 
-
-Start the servers:
-
-    cd primeserver
-    docker-compose up
-
-Start a client
-
-    cd primeclient
-    docker-compose up
+First start haproxy and consul by `./start_haproxy.sh`.
+You can add new servers with `./start_primeserver.sh`.  
+This will create new instance of the primeserver container.
 
 # Maintainers
 
