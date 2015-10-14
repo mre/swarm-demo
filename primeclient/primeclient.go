@@ -25,6 +25,7 @@ type NaturalNumber struct {
 func requestNumbers(server string, first, last int) <-chan *PrimeServerResponse {
 	count := last - first
 	ch := make(chan *PrimeServerResponse, count) // buffered
+
 	for i := first; i < last; i++ {
 		url := server + "/" + strconv.Itoa(i)
 		go func(url string, i int) {
@@ -32,6 +33,7 @@ func requestNumbers(server string, first, last int) <-chan *PrimeServerResponse 
 			ch <- &PrimeServerResponse{url, i, resp, err}
 		}(url, i)
 	}
+
 	return ch
 }
 
@@ -77,14 +79,16 @@ func receiveNumbers(ch <-chan *PrimeServerResponse, first, last int) []NaturalNu
 	}
 }
 
-func checkPrime(server string, first, last int) []NaturalNumber {
-	ch := requestNumbers(server, first, last)
-	return receiveNumbers(ch, first, last)
+func checkPrime(server string, first, last, batchSize int) {
+	for i := first; i <= last; i += batchSize {
+		ch := requestNumbers(server, i, i+batchSize)
+		for _, number := range receiveNumbers(ch, i, i+batchSize) {
+			fmt.Printf("%d: %t\n", number.number, number.isPrime)
+		}
+		fmt.Printf("From %d to %d\n", i, i+batchSize)
+	}
 }
 
 func main() {
-	numbers := checkPrime("http://localhost:9090", 1, 100)
-	for _, number := range numbers {
-		fmt.Printf("%d: %t\n", number.number, number.isPrime)
-	}
+	checkPrime("http://localhost:9090", 1000000000, 10000000000, 10)
 }
