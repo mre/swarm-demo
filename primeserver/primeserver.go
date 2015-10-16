@@ -2,11 +2,13 @@ package main
 
 import (
 	"fmt"
+	"github.com/armon/go-metrics"
 	"log"
 	"net"
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 )
 
 func getMyIP() string {
@@ -39,6 +41,7 @@ func isPrime(x int) bool {
 }
 
 func checkPrime(w http.ResponseWriter, r *http.Request) {
+	defer metrics.MeasureSince([]string{"primeserver", "runtime"}, time.Now())
 	i, err := strconv.Atoi(r.URL.Path[1:])
 	if err != nil {
 		fmt.Fprintf(w, "That's not a number. You make server cry :,(")
@@ -49,8 +52,14 @@ func checkPrime(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/", checkPrime)         // set router
-	err := http.ListenAndServe(":9090", nil) // set listen port
+	// Setup metrics endpoint
+	sink, err := metrics.NewStatsdSink("0.0.0.0:8125")
+	if err != nil {
+		log.Fatal(err)
+	}
+	metrics.NewGlobal(metrics.DefaultConfig("metrics-service"), sink)
+	http.HandleFunc("/", checkPrime)        // set router
+	err = http.ListenAndServe(":9090", nil) // set listen port
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
