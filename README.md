@@ -34,6 +34,14 @@ First start haproxy and consul with `./start_haproxy.sh`.
 You can add new servers with `./start_primeserver.sh`.  
 This will create a new instance of the primeserver container.
 
+
+After that you can run the clients either locally or in another container.  
+E.g. to check each number from 1 to 1000 if it is prime in batches of 100, run:
+
+    go run primeclient.go --host=hostname --start=1 --stop=1000 --step=100
+
+Of course you can start many clients at the same time to create more load.
+
 # Maintainers
 
 @jsacha
