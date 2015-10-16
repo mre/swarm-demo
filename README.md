@@ -23,17 +23,16 @@ This will create the following setup:
                                              |              |
                                              +--------------+
 
-The containers are golang webservers that take an int and return `true`
+The servers are golang webservers that take an int and return `true`
 if the int is a prime number and `false` otherwise.  
-The traffic to the containers is load-balanced with a HAproxy.
-
+The traffic to the containers is load-balanced with HAproxy.  
 Swarm is used for scaling the number of webservers.
 
 # Usage
 
-First start haproxy and consul by `./start_haproxy.sh`.
+First start haproxy and consul with `./start_haproxy.sh`.
 You can add new servers with `./start_primeserver.sh`.  
-This will create new instance of the primeserver container.
+This will create a new instance of the primeserver container.
 
 # Maintainers
 
