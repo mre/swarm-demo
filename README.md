@@ -19,7 +19,7 @@ This will create the following setup:
                                        |                     
                                        |     +--------------+
                                        |     |              |
-                                       +----^+   Server 3   |
+                                       +----->   Server 3   |
                                              |              |
                                              +--------------+
 
