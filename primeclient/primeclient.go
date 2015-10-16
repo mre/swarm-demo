@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -90,5 +91,13 @@ func checkPrime(server string, first, last, batchSize int) {
 }
 
 func main() {
-	checkPrime("http://localhost:9090", 1000000000, 10000000000, 10)
+
+	hostName := flag.String("host", "localhost", "The host name of the prime server")
+	hostPort := flag.Int("port", 9090, "The host port of the prime server")
+	flag.Parse()
+
+	hostAddress := "http://" + *hostName + ":" + strconv.Itoa(*hostPort)
+	fmt.Printf("Trying to connect to %s\n", hostAddress)
+
+	checkPrime(hostAddress, 1000000000, 10000000000, 5)
 }
