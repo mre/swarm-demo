@@ -86,7 +86,7 @@ func checkPrime(server string, first, last, batchSize int) {
 		for _, number := range receiveNumbers(ch, i, i+batchSize) {
 			fmt.Printf("%d: %t\n", number.number, number.isPrime)
 		}
-		fmt.Printf("From %d to %d\n", i, i+batchSize)
+		fmt.Printf("Checking numbers from %d to %d\n", i, i+batchSize)
 	}
 }
 
