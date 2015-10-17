@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## start new server instance
-NEW_CONTAINER_ID=`docker run -d -p 80 nginx`
+NEW_CONTAINER_ID=`docker run -d -p 80:9090 nginx`
 
 ## gets its ip and port
 CONTAINER_HOST=`docker inspect -f '{{range $p, $conf := .NetworkSettings.Ports}}{{range $p2, $c2 := $conf}}{{$c2.HostIp}}{{end}}{{end}}' $NEW_CONTAINER_ID`
