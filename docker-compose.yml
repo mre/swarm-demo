@@ -10,11 +10,10 @@ consul:
     - "8302:8302"
 
 haproxy:
-  image: asteris/haproxy-consul
+  image: jakubsacha/haproxy-consul
   volumes:
     - "./haproxy:/home:rw"
   environment:
-    CONSUL_CONFIG: /home/consul-template/config.d
     CONSUL_CONNECT: consul:8500
     HAPROXY_DOMAIN: docker-workshops.trv
   dns:
