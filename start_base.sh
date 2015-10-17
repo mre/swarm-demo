@@ -12,7 +12,7 @@ CONSUL_IP=`docker inspect -f '{{range $p, $conf := .NetworkSettings.Ports}}{{ran
 
 ## REGISTER influxdb in consul
 INFLUXDB_ID=`docker ps --filter name=influxdb -q`
-INFLUXDB_IP=`docker inspect -f '{{range $p, $conf := .NetworkSettings.Ports}}{{range $p2, $c2 := $conf}}    {{$c2.HostIp}}{{end}}{{end}}' $HAPROXY_ID | awk '{print $1}'`
+INFLUXDB_IP=`docker inspect -f '{{range $p, $conf := .NetworkSettings.Ports}}{{range $p2, $c2 := $conf}}    {{$c2.HostIp}}{{end}}{{end}}' $INFLUXDB_ID | awk '{print $1}'`
 
 ## register service in consul
 curl -X PUT -d "{\"ID\": \"api-$INFLUXDB_ID\", \"Name\": \"api.influxdb\", \"Address\": \"$INFLUXDB_IP\", \"Port\": 8086, \"Check\": { \"HTTP\": \"http://$INFLUXDB_IP:8086/query?q=SHOW%20DATABASES\", \"Interval\": \"2s\"  }}" http://$CONSUL_IP:8500/v1/agent/service/register
