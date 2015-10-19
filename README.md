@@ -49,8 +49,14 @@ Of course you can start many clients at the same time to create more load.
 
 To get an idea of the current cluster status, you can collect some metrics.  
 For that you can start the metrics backend, which is completely independent from the application.  
-You can start it with `docker-compose up` from the respective folder.
 You can enable and disable it at any time.  
+
+Start it with `docker-compose up` from the respective folder.  
+To make it work across hosts, also add the following entry to the /etc/hosts on cluster every machine:  
+
+    127.0.0.1 influxdb
+
+Please adjust the IP to the host where InfluxDB is running.  
 
 # Maintainers
 
