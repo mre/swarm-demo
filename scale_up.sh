@@ -14,4 +14,4 @@ CONTAINER_PORT=`docker inspect -f '{{range $p, $conf := .NetworkSettings.Ports}}
 
 
 ## register service in consul
-curl -X PUT -d "{\"ID\": \"$NEW_CONTAINER_ID\", \"Name\": \"primeserver\", \"Address\": \"$CONTAINER_HOST\", \"Port\": $CONTAINER_PORT, \"Check\": { \"HTTP\": \"http://$CONTAINER_HOST:$CONTAINER_PORT/\", \"Interval\": \"2s\"  }}" http://$CONSUL_IP:8500/v1/agent/service/register
+curl -X PUT -d "{\"ID\": \"$NEW_CONTAINER_ID\", \"Name\": \"primeserver\", \"Address\": \"$CONTAINER_HOST\", \"Port\": $CONTAINER_PORT, \"Check\": { \"HTTP\": \"http://$CONTAINER_HOST:$CONTAINER_PORT/\", \"Interval\": \"60s\"  }}" http://$CONSUL_IP:8500/v1/agent/service/register
