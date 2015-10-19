@@ -25,12 +25,14 @@ func isPrime(x int) bool {
 // checkPrime handles the prime check request
 func checkPrime(w http.ResponseWriter, r *http.Request) {
 	defer metrics.MeasureSince([]string{"runtime"}, time.Now())
+	metrics.IncrCounter([]string{"requests"}, 1)
 	i, err := strconv.Atoi(r.URL.Path[1:])
 	if err != nil {
 		fmt.Fprintf(w, "That's not a number. You make server cry :,(")
 		return
 	}
 	fmt.Fprintf(w, "%t", isPrime(i))
+
 }
 
 // checkPrime handles the prime check request
@@ -45,7 +47,6 @@ func main() {
 		log.Fatal(err)
 	}
 	metrics.NewGlobal(metrics.DefaultConfig("primeserver"), sink)
-	metrics.IncrCounter([]string{"requests"}, 1)
 
 	http.HandleFunc("/", checkPrime)        // set router
 	http.HandleFunc("/health", health)        // set router
