@@ -49,7 +49,6 @@ func checkPrime(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Fprintf(w, "%t", isPrime(i))
-	//fmt.Fprintf(w, "Hello from %s!", getMyIP())
 }
 
 func main() {
