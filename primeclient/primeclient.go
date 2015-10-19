@@ -92,8 +92,7 @@ func checkPrime(server string, first, last, batchSize int) {
 
 func main() {
 
-	hostName := flag.String("host", "localhost", "The host name of the prime server")
-	hostPort := flag.Int("port", 9090, "The host port of the prime server")
+	hostName := flag.String("host", "localhost:80", "The host name of the prime server")
 
 	start := flag.Int("start", 1000000000, "The first number to check for being prime")
 	stop := flag.Int("stop", 10000000000, "The last number to check for being prime")
@@ -101,7 +100,7 @@ func main() {
 
 	flag.Parse()
 
-	hostAddress := "http://" + *hostName + ":" + strconv.Itoa(*hostPort)
+	hostAddress := "http://" + *hostName
 	fmt.Printf("Trying to connect to %s\n", hostAddress)
 
 	checkPrime(hostAddress, *start, *stop, *step)
