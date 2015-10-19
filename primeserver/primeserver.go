@@ -59,7 +59,6 @@ func main() {
 	}
 	metrics.NewGlobal(metrics.DefaultConfig("primeserver"), sink)
 	metrics.IncrCounter([]string{"requests"}, 1)
-	metrics.IncrCounter([]string{"foo"}, 42)
 
 	http.HandleFunc("/", checkPrime)        // set router
 	err = http.ListenAndServe(":9090", nil) // set listen port
