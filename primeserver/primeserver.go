@@ -4,28 +4,10 @@ import (
 	"fmt"
 	"github.com/armon/go-metrics"
 	"log"
-	"net"
 	"net/http"
-	"os"
 	"strconv"
 	"time"
 )
-
-func getMyIP() string {
-	addrs, err := net.InterfaceAddrs()
-	if err != nil {
-		os.Stderr.WriteString("Oops: " + err.Error() + "\n")
-		os.Exit(1)
-	}
-	for _, a := range addrs {
-		if ipnet, ok := a.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
-			if ipnet.IP.To4() != nil {
-				return ipnet.IP.String()
-			}
-		}
-	}
-	return "unknown"
-}
 
 // isPrime checks if a number is prime
 func isPrime(x int) bool {
@@ -51,6 +33,11 @@ func checkPrime(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "%t", isPrime(i))
 }
 
+// checkPrime handles the prime check request
+func health(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "OK")
+}
+
 func main() {
 	// Setup metrics endpoint
 	sink, err := metrics.NewStatsdSink("0.0.0.0:8125")
@@ -61,6 +48,7 @@ func main() {
 	metrics.IncrCounter([]string{"requests"}, 1)
 
 	http.HandleFunc("/", checkPrime)        // set router
+	http.HandleFunc("/health", health)        // set router
 	err = http.ListenAndServe(":9090", nil) // set listen port
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
