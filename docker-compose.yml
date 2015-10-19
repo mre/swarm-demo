@@ -10,11 +10,10 @@ consul:
     - "8302:8302"
 
 haproxy:
-  image: asteris/haproxy-consul
+  image: jakubsacha/haproxy-consul
   volumes:
     - "./haproxy:/home:rw"
   environment:
-    CONSUL_CONFIG: /home/consul-template/config.d
     CONSUL_CONNECT: consul:8500
     HAPROXY_DOMAIN: docker-workshops.trv
   dns:
@@ -24,3 +23,27 @@ haproxy:
   ports:
     - "80:80"
     - "1936:1936"
+
+
+# metrics
+influxdb:
+  image: tutum/influxdb:latest
+  ports:
+    - 2003:2003
+    - 8083:8083
+    - 8086:8086
+  environment:
+    - ADMIN_USER=admin
+    - INFLUXDB_INIT_PWD=admin
+    - PRE_CREATE_DB=metrics
+    - GRAPHITE_PROTOCOL=tcp
+    - GRAPHITE_DB=metrics
+    # TODO:
+    #- GRAPHITE_template="tag1.tag2.tag3.measurement*"
+    # servers.localhost.cpu.loadavg.10 -> .host.resource.measurement*
+grafana:
+  image: grafana/grafana
+  ports:
+    - 3000:3000
+  links:
+    - influxdb
