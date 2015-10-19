@@ -7,11 +7,11 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+	"math/rand"
 )
 
 // PrimeServerResponse contains the data received from the server
 type PrimeServerResponse struct {
-	url      string
 	number   int
 	response *http.Response
 	err      error
@@ -23,23 +23,19 @@ type NaturalNumber struct {
 	isPrime bool
 }
 
-func requestNumbers(server string, first, last int) <-chan *PrimeServerResponse {
-	count := last - first
-	ch := make(chan *PrimeServerResponse, count) // buffered
-
-	for i := first; i < last; i++ {
+func requestNumbers(ch chan *PrimeServerResponse, server string, first, last int){
+	for i := first; i <= last; i++ {
 		url := server + "/" + strconv.Itoa(i)
-		go func(url string, i int) {
-			resp, err := http.Get(url)
-			ch <- &PrimeServerResponse{url, i, resp, err}
-		}(url, i)
-	}
+		resp, err := http.Get(url)
+		ch <- &PrimeServerResponse{i, resp, err}
+		time.Sleep(time.Duration(rand.Intn(50) + 50) * time.Millisecond)
 
-	return ch
+	}
 }
 
 func extractNumber(r *PrimeServerResponse) (*NaturalNumber, error) {
 	contents, err := ioutil.ReadAll(r.response.Body)
+	defer r.response.Body.Close()
 	if err != nil {
 		return nil, err
 	}
@@ -51,8 +47,7 @@ func extractNumber(r *PrimeServerResponse) (*NaturalNumber, error) {
 	return &NaturalNumber{r.number, isPrime}, nil
 }
 
-func receiveNumbers(ch <-chan *PrimeServerResponse, first, last int) []NaturalNumber {
-	count := last - first
+func receiveNumbers(ch chan *PrimeServerResponse, last int) {
 	numbers := []NaturalNumber{}
 	received := 0
 	for {
@@ -70,24 +65,27 @@ func receiveNumbers(ch <-chan *PrimeServerResponse, first, last int) []NaturalNu
 				continue
 			}
 			numbers = append(numbers, *n)
-			if received == count {
-				return numbers
+			fmt.Printf("%d: %t\n", n.number, n.isPrime)
+			if received == last {
+				return
 			}
-		case <-time.After(50 * time.Millisecond):
+		case <-time.After(300 * time.Millisecond):
 			// Wait a bit for the server response
-			fmt.Printf(".")
+			fmt.Printf("/")
+			time.Sleep(100*time.Millisecond)
+			fmt.Printf("\r")
+			fmt.Printf("\\")
+			time.Sleep(100*time.Millisecond)
+			fmt.Printf("\r")
 		}
 	}
 }
 
 func checkPrime(server string, first, last, batchSize int) {
-	for i := first; i <= last; i += batchSize {
-		ch := requestNumbers(server, i, i+batchSize)
-		for _, number := range receiveNumbers(ch, i, i+batchSize) {
-			fmt.Printf("%d: %t\n", number.number, number.isPrime)
-		}
-		fmt.Printf("Checking numbers from %d to %d\n", i, i+batchSize)
-	}
+	ch := make(chan *PrimeServerResponse, batchSize) // buffered
+
+	go requestNumbers(ch, server, first, last)
+	receiveNumbers(ch, last);
 }
 
 func main() {
