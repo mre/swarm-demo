@@ -27,7 +27,7 @@ func getMyIP() string {
 	return "unknown"
 }
 
-// A simple prime checker
+// isPrime checks if a number is prime
 func isPrime(x int) bool {
 	if x < 2 {
 		return false
@@ -40,6 +40,7 @@ func isPrime(x int) bool {
 	return true
 }
 
+// checkPrime handles the prime check request
 func checkPrime(w http.ResponseWriter, r *http.Request) {
 	defer metrics.MeasureSince([]string{"primeserver", "runtime"}, time.Now())
 	i, err := strconv.Atoi(r.URL.Path[1:])
