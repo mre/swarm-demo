@@ -1,6 +1,6 @@
 consul:
   image: gliderlabs/consul-server:latest
-  command: -server -bootstrap
+  command: -server -bootstrap -domain docker-workshops.trv
   ports:
     - "8600:8600/udp"
     - "53:8600/udp"
